@@ -28,7 +28,7 @@ func main() {
 
 	for _, entry := range entries {
 
-		name := dir + "/" + entry.Name()
+		name := filepath.Join(dir, entry.Name())
 
 		// ディレクトリは除外
 		if entry.IsDir() {
@@ -43,8 +43,10 @@ func main() {
 		if strings.ToLower(filepath.Ext(name)) == ".pdf" {
 			// 最後の-のインデックスを取得。それをキーとしてグループ分け
 			lastIndex := strings.LastIndex(name, "-")
-			groupKey := name[:lastIndex]
-			groups[groupKey] = append(groups[groupKey], name)
+			if lastIndex != -1 {
+				groupKey := name[:lastIndex]
+				groups[groupKey] = append(groups[groupKey], name)
+			}
 		}
 
 	}
@@ -61,7 +63,7 @@ func main() {
 		// 結合実行
 		err := api.MergeCreateFile(files, outputFile, false, nil)
 		if err != nil {
-			log.Fatalf("❌ エラーが発生しました: %v", err)
+			log.Printf("❌ エラーが発生しました: %v", err)
 			continue
 		}
 		fmt.Printf("  ✅ 完了: %s をまとめました\n", groupKey)
